@@ -8,6 +8,7 @@ import {
   TextInput,
   breakpoint,
   textStyle,
+  useKeyDown,
   useTheme,
 } from '@aragon/ui'
 import IdentityBadgeWithNetwork from '../IdentityBadge/IdentityBadgeWithNetwork'
@@ -58,24 +59,25 @@ function LocalModal({ address, label, onCancel, onSave }) {
     }
   }, [address, labelInput, onSave])
 
-  const handleKeyDown = useCallback(
-    e => {
-      if (e.keyCode === keycodes.enter) {
-        handleSave()
-      } else if (e.keyCode === keycodes.esc) {
-        handleCancel()
-      }
-    },
-    [handleCancel, handleSave]
+  useKeyDown(
+    [keycodes.enter, keycodes.esc],
+    useCallback(
+      keycode => {
+        if (keycode === keycodes.enter) {
+          handleSave()
+        } else if (keycode === keycodes.esc) {
+          handleCancel()
+        }
+      },
+      [handleCancel, handleSave]
+    )
   )
 
   useEffect(() => {
     setAction(label && label.trim() ? 'Edit' : 'Add')
     labelInput.current.focus()
     labelInput.current.select()
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [label, labelInput, handleKeyDown])
+  }, [label, labelInput])
 
   return (
     <EscapeOutside onEscapeOutside={onCancel}>

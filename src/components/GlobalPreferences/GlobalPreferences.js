@@ -11,13 +11,14 @@ import {
   breakpoint,
   springs,
   textStyle,
+  useKeyDown,
   useTheme,
   useToast,
   useViewport,
 } from '@aragon/ui'
 import { Transition, animated } from 'react-spring'
+import keycodes from '../../keycodes'
 import { AragonType, AppType } from '../../prop-types'
-import { useEsc } from '../../hooks'
 import Network from './Network/Network'
 import Notifications from './Notifications/Notifications'
 import CustomLabels from './CustomLabels/CustomLabels'
@@ -70,16 +71,12 @@ function GlobalPreferences({
     sharedIdentitiesSomeSelected,
   } = useSharedLink({ wrapper, toast, locator, onScreenChange })
 
-  const handleSharedIdentitiesClose = () => {
+  const handleSharedIdentitiesClose = useCallback(() => {
     handleSharedIdentitiesCancel()
     onClose()
-  }
+  }, [handleSharedIdentitiesCancel, onClose])
 
-  useEsc(onClose)
-
-  const tabItems = VALUES.filter((_, index) =>
-    Boolean(wrapper || index === NETWORK_INDEX)
-  )
+  useKeyDown(keycodes.esc, onClose)
 
   const container = useRef()
   useEffect(() => {
@@ -87,6 +84,10 @@ function GlobalPreferences({
       container.current.focus()
     }
   }, [])
+
+  const tabItems = VALUES.filter((_, index) =>
+    Boolean(wrapper || index === NETWORK_INDEX)
+  )
 
   return (
     <div ref={container} tabIndex="0" css="outline: 0">
